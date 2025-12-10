@@ -1,8 +1,24 @@
-import { IonContent, IonHeader, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonHeader, IonList, IonPage, IonTitle, IonToolbar, useIonViewDidEnter } from '@ionic/react';
+import { useState } from 'react';
+
 import './Tab1.css';
 import RepoItem from '../components/RepoItem';
+import { RepositoryItem } from '../interfaces/RepositoryItem';
+import { fetchRepositories } from '../services/GithubService';
 
 const Tab1: React.FC = () => {
+  const [repos, setRepos] = useState<RepositoryItem[]>([]);
+
+  const loadRepos = async () => {
+    const reposData = await fetchRepositories();
+    setRepos(reposData);
+  };
+
+  useIonViewDidEnter(() => {
+    console.log ("IonViewDidEnter: Cargando repositorios...");  
+    loadRepos();
+  });
+
   return (
     <IonPage>
       <IonHeader>
@@ -17,18 +33,12 @@ const Tab1: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonList>
-          <RepoItem 
-          name="Repositorio 1" 
-          imageUrl="https://cdn.worldvectorlogo.com/logos/android-6.svg" 
-          />
-          <RepoItem 
-          name="Repositorio 2" 
-          imageUrl="https://cdn.worldvectorlogo.com/logos/android-6.svg" 
-          />
-          <RepoItem 
-          name="Repositorio 3" 
-          imageUrl="https://cdn.worldvectorlogo.com/logos/android-6.svg" 
-          />
+          {repos.map((repo,index) => (
+            <RepoItem 
+              key={index}
+              repo={repo}
+            />
+          ))}
         </IonList>
       </IonContent>
     </IonPage>
