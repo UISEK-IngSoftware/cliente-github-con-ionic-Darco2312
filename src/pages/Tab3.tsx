@@ -1,8 +1,22 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonViewDidEnter } from '@ionic/react';
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
 import './Tab3.css';
+import { useState } from 'react';
+import { UserInfo } from '../interfaces/UserInfo';
+import { getUserInfo } from '../services/GithubService';
 
 const Tab3: React.FC = () => {
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+
+  const loadUserInfo = async () => {
+    const Info = await getUserInfo();
+    setUserInfo(Info);
+  };
+  useIonViewDidEnter(() => {
+    loadUserInfo();
+  });
+
+
   return (
     <IonPage>
       <IonHeader>
@@ -17,14 +31,15 @@ const Tab3: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonCard>
-          <img alt="Silhouette of mountains" src="https://superclasica.com/wp/wp-content/uploads/2014/11/Daniela-Romo-sin-marco.png" />
+          <img alt={userInfo?.name} 
+          src={userInfo?.avatar_url} />
           <IonCardHeader>
-            <IonCardTitle>Daniela Romo</IonCardTitle>
-            <IonCardSubtitle>Darco2312</IonCardSubtitle>
-          </IonCardHeader>
-           
-           
-          <IonCardContent>  Hola. Soy una desarrolladora de software. </IonCardContent>
+            <IonCardTitle>{userInfo?.name}</IonCardTitle>
+            <IonCardSubtitle>{userInfo?.login}</IonCardSubtitle>
+          </IonCardHeader> 
+          <IonCardContent> 
+            {userInfo?.bio}
+             </IonCardContent>
         </IonCard>
 
       </IonContent>
